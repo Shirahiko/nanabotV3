@@ -1,10 +1,10 @@
 const fs = require('fs');
 const db = require('quick.db')
 const Discord = require('discord.js');
-const { prefix, token, password } = require('./config.json');
+const { prefix } = require('./config.json');
 const cooldowns = new Discord.Collection();
 const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://ich2:"+password+"@cluster0-bgvli.mongodb.net/test?retryWrites=true";
+const uri = "mongodb+srv://ich2:"+process.env.password+"@cluster0-bgvli.mongodb.net/test?retryWrites=true";
 const mongo = new MongoClient(uri, { useNewUrlParser: true });
 
 const client = new Discord.Client();
@@ -123,4 +123,4 @@ client.on('message', message => {
        
 });
 
-client.login(token);
+client.login(process.env.token);
