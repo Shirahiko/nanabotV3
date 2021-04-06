@@ -18,24 +18,22 @@ for (const file of commandFiles) {
 }
 
 mongo.connect(err => {
-  const collection = mongo.db("nanabot").collection("user");
-  client.once('ready', () => {
+    const collection = mongo.db("nanabot").collection("user");
+    client.once('ready', () => {
+        let allUsers = client.users.array();
+        for(let i = 0; i < allUsers.length; i++){        
+            let query = { discordid: allUsers[i].id};
+            (function(arg) { 
+                collection.find(query).toArray(function(err, result) {
+                    if (result === undefined || result.length == 0 && arg != 1) {
+                        collection.insertOne( {  discordid: arg , balance: 50, lastwork: null } );                       
+                    }             
+                });
+            })(allUsers[i].id);
+        }
 
-    let allUsers = client.users.array();
-    for(let i = 0; i < allUsers.length; i++){        
-        let query = { discordid: allUsers[i].id};
-        (function(arg) { 
-            collection.find(query).toArray(function(err, result) {
-                if (result === undefined || result.length == 0 && arg != 1) {
-                    collection.insertOne( {  discordid: arg , balance: 50, lastwork: null } );                       
-                }             
-            });
-        })(allUsers[i].id);
-    }
-
-    client.user.setActivity("at the café", {type: 'PLAYING', url:'https://www.youtube.com/channel/UCAo6nC6I9yk2X4xqQThhhew'});
-
-	console.log('Ready!')
+        client.user.setActivity("at the café", {type: 'PLAYING', url:'https://www.youtube.com/channel/UCAo6nC6I9yk2X4xqQThhhew'});
+        console.log('Ready!')
     });
 
     client.on("guildMemberAdd", member => {
@@ -47,7 +45,7 @@ mongo.connect(err => {
                 }       
             });
         })(member.id);
-    }) 
+    }); 
 
     client.on('message', message => {
         if (!message.content.startsWith(prefix) || message.author.bot) return;

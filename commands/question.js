@@ -2,8 +2,7 @@ module.exports = {
     name: 'question:',
     aliases: ['q', 'question'],
 	description: 'question:',
-    execute(message, args){
-    
+    execute(message, args){    
         if(!args[2]) return message.reply("Is that supposed to be a question?");
         let replies = ["Yeah.", "No!" , "Uh... no.", "Maybe~.", "Oof, let me think of that first."]
 

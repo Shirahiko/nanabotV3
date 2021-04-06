@@ -50,7 +50,7 @@ module.exports = {
                     change = 400;    
                     break;
                 case 'a':
-                default: //default is to lose always
+                default: //default is lose always
                     message.channel.send('Oh no.. seems like you won nothing.');
                     change = -100;
                     break;

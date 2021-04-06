@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 
 module.exports = {
     name: 'balance',
-	description: 'question:',
+	description: 'balance',
     execute( message, args, collection) {
         var query = { discordid: message.author.id};
         collection.find(query).toArray(function(err, result) {
