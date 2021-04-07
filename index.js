@@ -4,9 +4,10 @@ const Discord = require('discord.js');
 const {prefix} = require('./config.json');
 const cooldowns = new Discord.Collection();
 const MongoClient = require('mongodb').MongoClient;
+const autoRoles = require('./discord functions/autoRoles');
 const uri = "mongodb://nana:" + process.env.password + "@localhost/nanabot?retryWrites=true";
 const mongo = new MongoClient(uri, {useNewUrlParser: true});
-const client = new Discord.Client();
+const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
 client.commands = new Discord.Collection();
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -30,18 +31,15 @@ mongo.connect(err =>
     });
 
     client.on("guildMemberAdd", member =>
-    {
-        (function (arg)
-        {
-            let query = {discordid: arg};
-            collection.find(query).toArray(function (err, result)
-            {
-                if (result === undefined || result.length == 0 && arg != 1)
-                {
-                    collection.insertOne({discordid: arg, balance: 50, lastwork: null});
-                }
-            });
-        })(member.id);
+    {    
+        const welcomeChannelId = '510220836913938445';
+        const rulesChannelId = '510224463271297039';
+        const startBalance = "As a welcome gift, I have added 50¥ to your wallet. Spend it wisely.";
+     
+        const messageArray = [`Welcome <@${member.id}> to the server! Please check out ${member.guild.channels.cache.get(rulesChannelId).toString()}. ${startBalance}`];        
+        const channel = member.build.channels.cache.get(welcomeChannelId);
+        let result = Math.floor((Math.random() * messageArray.length));
+        channel.send(messageArray[result]);
     });
 
     client.on('message', message =>
@@ -89,6 +87,62 @@ mongo.connect(err =>
         {
             console.error(error);
             message.reply('there was an error trying to execute that command!');
+        }
+    });
+     
+    client.on('messageReactionAdd', async (reaction, user) => {
+        if (reaction.message.partial) await reaction.message.fetch();
+        if (reaction.partial) await reaction.fetch();
+        if (user.bot) return;
+        if (!reaction.message.guild) return;
+
+        if (reaction.message.channel.id == channel) {
+            switch (reaction.emoji.name) {
+                case autoRoles.livestreamEmoji:
+                    await reaction.message.guild.members.cache.get(user.id).roles.add(autoRoles.liveRole);
+                    break;
+                case autoRoles.videoEmoji:
+                    await reaction.message.guild.members.cache.get(user.id).roles.add(autoRoles.videoRole);
+                    break;
+                case autoRoles.generalAnnouncementEmoji:
+                    await reaction.message.guild.members.cache.get(user.id).roles.add(autoRoles.generalRole);
+                    break;
+                case autoRoles.serverAnnouncementEmoji:
+                    await reaction.message.guild.members.cache.get(user.id).roles.add(autoRoles.serverRole);
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            return;
+        } 
+    });
+
+    client.on('messageReactionRemove', async (reaction, user) => { 
+        if (reaction.message.partial) await reaction.message.fetch();
+        if (reaction.partial) await reaction.fetch();
+        if (user.bot) return;
+        if (!reaction.message.guild) return; 
+
+        if (reaction.message.channel.id == channel) {
+            switch (reaction.emoji.name) {
+                case autoRoles.livestreamEmoji:
+                    await reaction.message.guild.members.cache.get(user.id).roles.remove(autoRoles.liveRole);
+                    break;
+                case autoRoles.videoEmoji:
+                    await reaction.message.guild.members.cache.get(user.id).roles.remove(autoRoles.videoRole);
+                    break;
+                case autoRoles.generalAnnouncementEmoji:
+                    await reaction.message.guild.members.cache.get(user.id).roles.remove(autoRoles.generalRole);
+                    break;
+                case autoRoles.serverAnnouncementEmoji:
+                    await reaction.message.guild.members.cache.get(user.id).roles.remove(autoRoles.serverRole);
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            return;
         }
     });
 });
