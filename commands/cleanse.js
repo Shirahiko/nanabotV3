@@ -3,6 +3,6 @@ module.exports = {
     description: '...',
     execute(message, args)
     {
-        message.channel.send('Salt... salt... salt... Be cleansed of the damn pervert you are!');
+        message.channel.send(`Ara~ now you're asking to be cleansed when you just DMed me much filthier stuff...`);
     },
 };
