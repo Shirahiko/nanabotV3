@@ -3,10 +3,12 @@ module.exports = {
     description: 'Creates a voting with yes/no answer',
     execute(message, args)
     {
-        message.channel.send(args.join(' '))
-            .then(function (message) {
-                message.react("👍")
-                message.react("👎")
+        let channel = message.channel;
+        message.delete();
+        channel.send(args.join(' '))
+            .then(function (newMessage) {
+                newMessage.react("👍")
+                newMessage.react("👎")
             });
     }
 }
@@ -16,11 +18,13 @@ module.exports = {
     description: 'Creates a voting with yes/no/maybe answer',
     execute(message, args)
     {
-        message.channel.send(args.join(' '))
-            .then(function (message) {
-                message.react("👍")
-                message.react("👎")
-                message.react("🤔")
+        let channel = message.channel;
+        message.delete();
+        channel.send(args.join(' '))
+            .then(function (newMessage) {
+                newMessage.react("👍")
+                newMessage.react("👎")
+                newMessage.react("🤔")
             });
     }
 }
