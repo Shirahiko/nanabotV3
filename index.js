@@ -11,6 +11,7 @@ const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION']
 client.commands = new Discord.Collection();
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+client.commands.set(autoRoles.name, autoRoles);
 
 for (const file of commandFiles)
 {
@@ -23,6 +24,25 @@ mongo.connect(err =>
     const collection = mongo.db("nanabot").collection("user");
     client.once('ready', () =>
     {
+        //second (optional), minute, hour, day of month, month, day of week
+        let biddingJob = new cron.CronJob('* * 1 * *', () => {
+            let nanaMasterRoleId = '830515786136158238';
+            let guild = client.guilds.get("510220836406558723");
+
+            //Remove the old Master of Nana
+            guild.roles.get(nanaMasterRoleId).members[0].removeRole(nanaMasterRoleId); 
+            //TODO: Add Role to new Master with ID from DB
+            let newMaster = guild.members.cache.get('242642161810538496');
+            newMaster.addRole(nanaMasterRoleId);
+            //TODO: Reset DB with bidding values
+
+            //Send Message of ownership to a channel
+            let channel = guild.channels.get('635456635120386049'); //bot channel
+            channel.send(`${newMaster} is now my new Master for this month!`);
+        });
+        
+        biddingJob.start();
+
         client.user.setActivity("at the café", {
             type: 'PLAYING',
             url: 'https://www.youtube.com/channel/UCAo6nC6I9yk2X4xqQThhhew'
