@@ -12,7 +12,8 @@ module.exports = {
     name: 'reactionrole',
     description: 'Creates reaction roles message',
     async execute(message, args) {
-        //TODO: what happens with updates and adding more roles, but u dont want to reset the counter on reactions? write an extra update command?        
+        //TODO: what happens with updates and adding more roles, but u dont want to reset the counter on reactions? write an extra update command?  
+        //TODO: this file is another folder and needs to be added/loaded in index.js      
         if(!message.member.guild.me.hasPermission('ADMINISTRATOR')){
             return;
         }
